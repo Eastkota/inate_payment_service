@@ -1,5 +1,5 @@
 # Use the official Go image with necessary tools for development
-FROM golang:1.23-alpine
+FROM golang:1.24-alpine
 
 # Set environment variables for x86_64 (amd64) architecture
 ENV GOARCH=amd64
