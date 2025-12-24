@@ -21,7 +21,7 @@ RUN go build -o inatepaymentservice
 
 
 # Expose the necessary port
-EXPOSE 8095
+EXPOSE 8103
 
 # Command to run the service
 CMD ["./inatepaymentservice"]
