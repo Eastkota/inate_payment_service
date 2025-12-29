@@ -4,7 +4,7 @@ import (
 	"inate_payment_service/helpers"
 	"inate_payment_service/model"
 	"inate_payment_service/services"
-
+	
 	"github.com/graphql-go/graphql"
 	"github.com/google/uuid"
 )
@@ -21,7 +21,14 @@ func NewInatePaymentResolver(service services.Services) *InatePaymentResolver {
 func (r *InatePaymentResolver) VerifyIapReceipt(p graphql.ResolveParams) *model.GenericInatePaymentResponse {
 	inputData := p.Args["input"].(map[string]interface{})
 	receiptData := inputData["receipt_data"].(string)
-	userId := inputData["user_id"].(uuid.UUID)
+	var userId *uuid.UUID
+    if userData, ok := inputData["user_id"].(string); ok && userData != "" {
+        parsedID, err := uuid.Parse(userData)
+        if err == nil {
+            userId = &parsedID
+        }
+    }
+
 	membershipDurationId := inputData["membership_duration_id"].(uuid.UUID)
 	product := inputData["product"].(string)
 	amount := inputData["amount"].(float64)

@@ -18,9 +18,11 @@ func NewInatePaymentService(repository repositories.Repository) *InatePaymentSer
 	return &InatePaymentService{Repository: repository}
 }
 
-func (ms *InatePaymentService) VerifyIapReceipt(transactionId string, userId, membershipDurationId uuid.UUID, product string, amount float64) (*model.IapTransaction, error) {
+func (ms *InatePaymentService) VerifyIapReceipt(transactionId string, userId *uuid.UUID, membershipDurationId uuid.UUID, product string, amount float64) (*model.IapTransaction, error) {
     transaction, err := helpers.VerifyAppleTransaction(transactionId, product, amount)
-    
+    if err != nil {
+        return nil, err
+    }
 
     iapInput := model.IapTransactionInput{
         UserId:               userId,

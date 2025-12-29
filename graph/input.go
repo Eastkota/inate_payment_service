@@ -14,7 +14,7 @@ var IapReceiptInput = graphql.NewInputObject(
 				Type: graphql.NewNonNull(graphql.String),
 			},
 			"user_id": &graphql.InputObjectFieldConfig{
-				Type: graphql.NewNonNull(scalar.UUID),
+				Type: scalar.UUID,
 			},
 			"membership_duration_id": &graphql.InputObjectFieldConfig{
 				Type: graphql.NewNonNull(scalar.UUID),

@@ -6,5 +6,5 @@ import (
 )
 
 type Services interface {
-	VerifyIapReceipt(receiptData string, userId, membershipDurationId uuid.UUID, productId string, amount float64) (*model.IapTransaction, error)
+	VerifyIapReceipt(receiptData string, userId *uuid.UUID, membershipDurationId uuid.UUID, productId string, amount float64) (*model.IapTransaction, error)
 }

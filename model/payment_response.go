@@ -12,7 +12,7 @@ type IapTransaction struct {
 	Product            string    `json:"product" gorm:"type:string"`
 	ReceiptData          string    `json:"receipt_data" gorm:"type:text"`
 	PurchaseDate         time.Time `json:"purchase_date" gorm:"type:timestamptz"`
-	UserId               uuid.UUID `json:"user_id" gorm:"type:uuid"`
+	UserId               *uuid.UUID `json:"user_id" gorm:"type:uuid"`
 	MembershipDurationId uuid.UUID `json:"membership_duration_id" gorm:"type:uuid"`
 	Amount			   float64   `json:"amount" gorm:"type:numeric"`
 	Status               string    `json:"status" gorm:"type:string"`

@@ -18,7 +18,6 @@ func NewInatePaymentRepository(db *gorm.DB) *InatePaymentRepository {
 }
 
 func (repo *InatePaymentRepository) StoreIapTransaction(iapInput model.IapTransactionInput) (*model.IapTransaction, error) {
-
     transaction := &model.IapTransaction{
 		ID:                   uuid.New(),
 		TransactionId:        iapInput.TransactionId,

@@ -46,7 +46,7 @@ type UserActivityInput struct {
 }
 
 type IapTransactionInput struct {
-	UserId               uuid.UUID `json:"user_id"`
+	UserId               *uuid.UUID `json:"user_id"`
 	MembershipDurationId uuid.UUID `json:"membership_duration_id"`
 	Product            string    `json:"product"`
 	ReceiptData          string    `json:"receipt_data"`
