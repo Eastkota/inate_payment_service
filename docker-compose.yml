@@ -1,0 +1,23 @@
+services:
+  inapppaymentservice:
+    image: inapppaymentservice:latest
+    container_name: inapppaymentservice
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+    ports:
+      - "8103:8103"
+    networks:
+      - educareNetwork
+    healthcheck:
+      test: wget -qO- http://localhost:8103/health || exit 1
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+
+networks:
+  educareNetwork:
+    external: true

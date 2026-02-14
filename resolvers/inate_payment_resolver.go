@@ -1,9 +1,9 @@
 package resolvers
 
 import (
-	"inate_payment_service/helpers"
-	"inate_payment_service/model"
-	"inate_payment_service/services"
+	"inapp_payment_service/helpers"
+	"inapp_payment_service/model"
+	"inapp_payment_service/services"
 	
 	"github.com/graphql-go/graphql"
 	"github.com/google/uuid"

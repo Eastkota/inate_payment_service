@@ -1,28 +1,17 @@
-# Use the official Go image with necessary tools for development
-FROM golang:1.24-alpine
-
-# Set environment variables for x86_64 (amd64) architecture
+FROM golang:1.23-alpine AS builder
 ENV GOARCH=amd64
-
-# Set the working directory inside the container
 WORKDIR /app
-
-# Copy the go.mod and go.sum files first to leverage Docker layer caching
 COPY go.mod go.sum ./
-
-# Download dependencies
 RUN go mod download
-
-# Copy the entire project directory
 COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o inapppaymentservice
 
-# Build Service
-RUN go build -o inatepaymentservice
-
-
-# Expose the necessary port
+FROM alpine:3.20
+RUN apk --no-cache add ca-certificates wget
+WORKDIR /app
+COPY --from=builder /app/inapppaymentservice .
+COPY --from=builder /app/.env .
 EXPOSE 8103
-
-# Command to run the service
-CMD ["./inatepaymentservice"]
-
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
+  CMD wget -qO- http://localhost:8103/health || exit 1
+CMD ["./inapppaymentservice"]

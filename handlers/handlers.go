@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"inate_payment_service/graph"
-	"inate_payment_service/model"
+	"inapp_payment_service/graph"
+	"inapp_payment_service/model"
 	
 	"context"
 	"encoding/json"
@@ -16,6 +16,8 @@ func Handler(ctx echo.Context) error {
 	if ctx.Request().Method != http.MethodPost {
 		return echo.ErrMethodNotAllowed
 	}
+
+	ctx.Request().Body = http.MaxBytesReader(ctx.Response(), ctx.Request().Body, 1<<20) // 1MB limit
 
 	var operation map[string]interface{}
 	err := json.NewDecoder(ctx.Request().Body).Decode(&operation)

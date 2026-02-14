@@ -1,7 +1,7 @@
 package services
 
 import (
-	"inate_payment_service/model"
+	"inapp_payment_service/model"
 	"github.com/google/uuid"
 )
 

@@ -1,8 +1,8 @@
 package helpers
 
 import (
-	"inate_payment_service/config"
-	"inate_payment_service/model"
+	"inapp_payment_service/config"
+	"inapp_payment_service/model"
 
 	"context"
 	"fmt"

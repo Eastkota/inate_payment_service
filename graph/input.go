@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"inate_payment_service/graph/scalar"
+	"inapp_payment_service/graph/scalar"
 
 	"github.com/graphql-go/graphql"
 )

@@ -1,9 +1,9 @@
 package services
 
 import (
-	"inate_payment_service/helpers"
-	"inate_payment_service/model"
-	"inate_payment_service/repositories"
+	"inapp_payment_service/helpers"
+	"inapp_payment_service/model"
+	"inapp_payment_service/repositories"
 
 	"fmt"
 	"time"

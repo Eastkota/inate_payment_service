@@ -1,4 +1,4 @@
-module inate_payment_service
+module inapp_payment_service
 
 go 1.24.0
 

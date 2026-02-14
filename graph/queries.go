@@ -1,9 +1,9 @@
 package schema
 
 import (
-	"inate_payment_service/helpers"
-	"inate_payment_service/model"
-	"inate_payment_service/resolvers"
+	"inapp_payment_service/helpers"
+	"inapp_payment_service/model"
+	"inapp_payment_service/resolvers"
 
 	"github.com/graphql-go/graphql"
 )

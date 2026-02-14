@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"inate_payment_service/model"
+	"inapp_payment_service/model"
 
 	"fmt"
 

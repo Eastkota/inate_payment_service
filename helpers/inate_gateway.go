@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-    "inate_payment_service/config"
+    "inapp_payment_service/config"
 )
 
 type AppleReceiptResponse struct {

@@ -1,1 +1,1 @@
-# inate_payment_service
+# inapp_payment_service
