@@ -5,7 +5,6 @@ import (
 	"inapp_payment_service/model"
 
 	"context"
-	"fmt"
 
 	"github.com/machinebox/graphql"
 	"github.com/google/uuid"
@@ -53,10 +52,10 @@ func ValidateToken(tokenStr string) (*model.User, error) {
 
 	err := authServiceClient.Run(context.Background(), req, &response)
 	if err != nil {
-		return nil, fmt.Errorf("invalid_token: %v", err)
+		return nil, NewUnauthorizedError("invalid_token")
 	}
 	if response.ValidateToken.Error.Message != "" {
-		return nil, fmt.Errorf(response.ValidateToken.Error.Message)
+		return nil, NewUnauthorizedError(response.ValidateToken.Error.Message)
 	}
 	return &response.ValidateToken.Data.User, err
 }
@@ -127,11 +126,11 @@ func SaveUserActivity(userID uuid.UUID, activity string) (*model.UserActivity, e
 
 	err := authServiceClient.Run(context.Background(), req, &resp)
 	if err != nil {
-		return nil, fmt.Errorf("failed to call saveUserActivity: %v", err)
+		return nil, WrapInternal("save user activity", err)
 	}
 
 	if resp.SaveUserActivity.Error.Message != "" {
-		return nil, fmt.Errorf(resp.SaveUserActivity.Error.Message)
+		return nil, NewInternalError(resp.SaveUserActivity.Error.Message, nil)
 	}
 
 	return &model.UserActivity{

@@ -1,9 +1,8 @@
 package repositories
 
 import (
+	"inapp_payment_service/helpers"
 	"inapp_payment_service/model"
-
-	"fmt"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -33,12 +32,12 @@ func (repo *InatePaymentRepository) StoreIapTransaction(iapInput model.IapTransa
     result := repo.DB.Create(transaction)
 
     if result.Error != nil {
-        return nil, fmt.Errorf("failed to save the IAP transaction: %v", result.Error)
+        return nil, helpers.WrapInternal("save IAP transaction", result.Error)
     }
 
     if result.RowsAffected == 0 {
-        return nil, fmt.Errorf("no rows were inserted")
+        return nil, helpers.NewInternalError("no rows were inserted", nil)
     }
-    
+
     return transaction, nil
 }

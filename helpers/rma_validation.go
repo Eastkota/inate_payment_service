@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	"fmt"
 	"regexp"
 
 	"github.com/google/uuid"
@@ -20,39 +19,39 @@ func isValidEmail(email string) bool {
 
 func ValidateArRequest(amount float64, product, remitterEmail string) error {
 	if !isValidEmail(remitterEmail) {
-		return fmt.Errorf("the provided email, was not a valid email: %v", remitterEmail)
+		return NewValidationError("the provided email was not a valid email", "remitter_email")
 	}
 	if amount <= 0 {
-		return fmt.Errorf("provide valid amount")
+		return NewValidationError("provide valid amount", "amount")
 	}
 	if product == "" {
-		return fmt.Errorf("product is required")
+		return NewValidationError("product is required", "product")
 	}
 	return nil
 }
 
 func ValidateAeRequest(remitterAccNo, remitterBankId, txnId string) error {
 	if remitterAccNo == "" {
-		return fmt.Errorf("account number is required")
+		return NewValidationError("account number is required", "remitter_acc_no")
 	}
 	if txnId == "" {
-		return fmt.Errorf("transaction id is required")
+		return NewValidationError("transaction id is required", "txn_id")
 	}
 	if remitterBankId == "" {
-		return fmt.Errorf("please choose the bank")
+		return NewValidationError("please choose the bank", "remitter_bank_id")
 	}
 	return nil
 }
 
 func ValidateDrRequest(txnId, remitterOtp string, userId, membershipDurationId uuid.UUID) error {
 	if remitterOtp == "" {
-		return fmt.Errorf("otp is required")
+		return NewValidationError("otp is required", "remitter_otp")
 	}
 	if txnId == "" {
-		return fmt.Errorf("transaction is required")
+		return NewValidationError("transaction is required", "txn_id")
 	}
 	if membershipDurationId == uuid.Nil {
-		return fmt.Errorf("membership duration is required")
+		return NewValidationError("membership duration is required", "membership_duration_id")
 	}
 	return nil
 }

@@ -5,7 +5,6 @@ import (
 	"inapp_payment_service/model"
 
 	"context"
-	"fmt"
 	"strings"
 	"time"
 
@@ -65,7 +64,7 @@ func GetMembership(userID uuid.UUID) (*model.AuthUserMembership, error) {
 	// Execute the request
 	err := membershipServiceClient.Run(context.Background(), req, &tempResponse)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch user profile : %v", err)
+		return nil, WrapInternal("fetch user profile", err)
 	}
 	// Check for errors in response
 	if tempResponse.FetchMembershipByUserId.Error.Message != "" {
@@ -73,7 +72,7 @@ func GetMembership(userID uuid.UUID) (*model.AuthUserMembership, error) {
 		if strings.Contains(tempResponse.FetchMembershipByUserId.Error.Message, "no documents in result") {
 			return nil, nil
 		}
-		return nil, fmt.Errorf("error from user service: %s", tempResponse.FetchMembershipByUserId.Error.Message)
+		return nil, NewInternalError(tempResponse.FetchMembershipByUserId.Error.Message, nil)
 	}
 	
 	formattedProfile := &model.AuthUserMembership{

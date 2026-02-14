@@ -5,7 +5,6 @@ import (
 	"inapp_payment_service/model"
 	"inapp_payment_service/repositories"
 
-	"fmt"
 	"time"
 	"github.com/google/uuid"
 )
@@ -33,9 +32,9 @@ func (ms *InatePaymentService) VerifyIapReceipt(transactionId string, userId *uu
         Amount:               transaction.Amount,
         Status:               transaction.Status,
     }
-    
+
     if err == nil && transaction.ProductId != product {
-        return nil, fmt.Errorf("product mismatch")
+        return nil, helpers.NewValidationError("product mismatch", "product")
     }
 
     storedTransaction, storeErr := ms.Repository.StoreIapTransaction(iapInput)
@@ -44,7 +43,7 @@ func (ms *InatePaymentService) VerifyIapReceipt(transactionId string, userId *uu
     }
 
     if err != nil {
-        return storedTransaction, fmt.Errorf("apple verification failed: %v", err)
+        return storedTransaction, helpers.WrapInternal("apple verification", err)
     }
 
     return storedTransaction, nil

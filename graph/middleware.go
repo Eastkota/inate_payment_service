@@ -4,8 +4,8 @@ import (
     "inapp_payment_service/helpers"
     "inapp_payment_service/model"
 
-    "fmt"
     "context"
+    "fmt"
     "net/http"
     "os"
     "time"
@@ -28,21 +28,21 @@ func AuthMiddleware(next func(p graphql.ResolveParams) *model.GenericInatePaymen
                     return helpers.FormatError(err)
                 }
                 if u == nil {
-                    return helpers.FormatError(fmt.Errorf("invalid_token"))
+                    return helpers.FormatError(helpers.NewUnauthorizedError("invalid token"))
                 }
 
                 ctx = context.WithValue(ctx, "user", u)
                 p.Context = ctx
                 user = u
             } else {
-                return helpers.FormatError(fmt.Errorf("invalid_token"))
+                return helpers.FormatError(helpers.NewUnauthorizedError("invalid token"))
             }
         } else {
             user, _ = userInterface.(*model.User)
         }
 
         if user == nil {
-            return helpers.FormatError(fmt.Errorf("invalid_token"))
+            return helpers.FormatError(helpers.NewUnauthorizedError("invalid token"))
         }
         return next(p)
     }
@@ -53,12 +53,12 @@ func PublicAuthMiddleware(next func(p graphql.ResolveParams) *model.GenericInate
         ctx := p.Context
         req, ok := ctx.Value(model.RequestKey).(*http.Request)
         if !ok {
-            return helpers.FormatError(fmt.Errorf("invalid_request"))
+            return helpers.FormatError(helpers.NewUnauthorizedError("invalid request"))
         }
 
         authHeader := req.Header.Get("Authorization")
         if authHeader == "" {
-            return helpers.FormatError(fmt.Errorf("UnAuthorized"))
+            return helpers.FormatError(helpers.NewUnauthorizedError("unauthorized"))
         }
 
         envPublicToken := os.Getenv("PUBLIC_ACCESS_TOKEN")
@@ -77,7 +77,7 @@ func PublicAuthMiddleware(next func(p graphql.ResolveParams) *model.GenericInate
             return helpers.FormatError(err)
         }
         if u == nil {
-            return helpers.FormatError(fmt.Errorf("invalid_token"))
+            return helpers.FormatError(helpers.NewUnauthorizedError("invalid token"))
         }
 
         ctx = context.WithValue(ctx, model.UserKey, u)
