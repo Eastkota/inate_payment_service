@@ -21,6 +21,9 @@ var UUID = graphql.NewScalar(graphql.ScalarConfig{
 		}
 	},
 	ParseValue: func(value interface{}) interface{} {
+		if value == nil {
+			return uuid.Nil
+		}
 		if str, ok := value.(string); ok {
 			id, err := uuid.Parse(str)
 			if err == nil {

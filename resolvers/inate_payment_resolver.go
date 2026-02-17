@@ -19,8 +19,8 @@ func NewInatePaymentResolver(service services.Services) *InatePaymentResolver {
 }
 
 func (r *InatePaymentResolver) VerifyIapReceipt(p graphql.ResolveParams) *model.GenericInatePaymentResponse {
-	inputData := p.Args["input"].(map[string]interface{})
-	receiptData := inputData["receipt_data"].(string)
+	inputData, _ := p.Args["input"].(map[string]interface{})
+	receiptData, _ := inputData["receipt_data"].(string)
 	var userId *uuid.UUID
     if userData, ok := inputData["user_id"].(string); ok && userData != "" {
         parsedID, err := uuid.Parse(userData)
@@ -29,9 +29,9 @@ func (r *InatePaymentResolver) VerifyIapReceipt(p graphql.ResolveParams) *model.
         }
     }
 
-	membershipDurationId := inputData["membership_duration_id"].(uuid.UUID)
-	product := inputData["product"].(string)
-	amount := inputData["amount"].(float64)
+	membershipDurationId, _ := inputData["membership_duration_id"].(uuid.UUID)
+	product, _ := inputData["product"].(string)
+	amount, _ := inputData["amount"].(float64)
 
 
 	result, err := r.Services.VerifyIapReceipt(receiptData, userId, membershipDurationId, product, amount)

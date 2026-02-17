@@ -29,6 +29,7 @@ func Handler(ctx echo.Context) error {
 	if !ok {
 		return echo.NewHTTPError(http.StatusBadRequest, "Missing query field")
 	}
+	query = sanitizeNullArgs(query)
 
 	var variables map[string]interface{}
 	if opVars, ok := operation["variables"]; ok && opVars != nil {

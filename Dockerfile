@@ -7,7 +7,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o inapppaymentservice
 
 FROM alpine:3.20
-RUN apk --no-cache add ca-certificates wget
+RUN apk --no-cache add ca-certificates wget tzdata
 WORKDIR /app
 COPY --from=builder /app/inapppaymentservice .
 COPY --from=builder /app/.env .

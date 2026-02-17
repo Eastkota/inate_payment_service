@@ -6,7 +6,7 @@ var GenericInatePaymentSuccessData = graphql.NewObject(graphql.ObjectConfig{
 	Name: "GenericInatePaymentSuccessData",
 	Fields: graphql.Fields{
 		"code":    &graphql.Field{Type: graphql.String},
-		"Message": &graphql.Field{Type: graphql.String},
+		"message": &graphql.Field{Type: graphql.String},
 	},
 })
 
