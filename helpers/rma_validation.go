@@ -19,39 +19,39 @@ func isValidEmail(email string) bool {
 
 func ValidateArRequest(amount float64, product, remitterEmail string) error {
 	if !isValidEmail(remitterEmail) {
-		return NewValidationError("the provided email was not a valid email", "remitter_email")
+		return NewValidationError("Please provide a valid email address", "remitter_email")
 	}
 	if amount <= 0 {
-		return NewValidationError("provide valid amount", "amount")
+		return NewValidationError("Please provide a valid amount", "amount")
 	}
 	if product == "" {
-		return NewValidationError("product is required", "product")
+		return NewValidationError("Product is required", "product")
 	}
 	return nil
 }
 
 func ValidateAeRequest(remitterAccNo, remitterBankId, txnId string) error {
 	if remitterAccNo == "" {
-		return NewValidationError("account number is required", "remitter_acc_no")
+		return NewValidationError("Account number is required", "remitter_acc_no")
 	}
 	if txnId == "" {
-		return NewValidationError("transaction id is required", "txn_id")
+		return NewValidationError("Transaction ID is required", "txn_id")
 	}
 	if remitterBankId == "" {
-		return NewValidationError("please choose the bank", "remitter_bank_id")
+		return NewValidationError("Please choose a bank", "remitter_bank_id")
 	}
 	return nil
 }
 
 func ValidateDrRequest(txnId, remitterOtp string, userId, membershipDurationId uuid.UUID) error {
 	if remitterOtp == "" {
-		return NewValidationError("otp is required", "remitter_otp")
+		return NewValidationError("Verification code is required", "remitter_otp")
 	}
 	if txnId == "" {
-		return NewValidationError("transaction is required", "txn_id")
+		return NewValidationError("Transaction is required", "txn_id")
 	}
 	if membershipDurationId == uuid.Nil {
-		return NewValidationError("membership duration is required", "membership_duration_id")
+		return NewValidationError("Membership duration is required", "membership_duration_id")
 	}
 	return nil
 }
