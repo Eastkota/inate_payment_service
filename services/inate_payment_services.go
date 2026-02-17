@@ -34,7 +34,7 @@ func (ms *InatePaymentService) VerifyIapReceipt(transactionId string, userId *uu
     }
 
     if err == nil && transaction.ProductId != product {
-        return nil, helpers.NewValidationError("product mismatch", "product")
+        return nil, helpers.NewValidationError("The selected product does not match your purchase", "product")
     }
 
     storedTransaction, storeErr := ms.Repository.StoreIapTransaction(iapInput)
@@ -43,7 +43,7 @@ func (ms *InatePaymentService) VerifyIapReceipt(transactionId string, userId *uu
     }
 
     if err != nil {
-        return storedTransaction, helpers.WrapInternal("apple verification", err)
+        return storedTransaction, helpers.WrapInternal("verifying purchase", err)
     }
 
     return storedTransaction, nil

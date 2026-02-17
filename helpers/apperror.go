@@ -12,6 +12,7 @@ const (
 	ErrCodeConflict     ErrorCode = "CONFLICT"
 	ErrCodeInternal     ErrorCode = "INTERNAL_ERROR"
 	ErrCodeRateLimited  ErrorCode = "RATE_LIMITED"
+	ErrCodeTokenExpired ErrorCode = "TOKEN_EXPIRED"
 )
 
 type AppError struct {
@@ -38,6 +39,9 @@ func NewForbiddenError(message string) *AppError {
 }
 func NewConflictError(message string) *AppError {
 	return &AppError{Code: ErrCodeConflict, Message: message}
+}
+func NewTokenExpiredError(message string) *AppError {
+	return &AppError{Code: ErrCodeTokenExpired, Message: message}
 }
 func NewInternalError(message string, internal error) *AppError {
 	return &AppError{Code: ErrCodeInternal, Message: message, Internal: internal}

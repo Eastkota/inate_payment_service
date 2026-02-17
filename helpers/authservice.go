@@ -52,10 +52,10 @@ func ValidateToken(tokenStr string) (*model.User, error) {
 
 	err := authServiceClient.Run(context.Background(), req, &response)
 	if err != nil {
-		return nil, NewUnauthorizedError("invalid_token")
+		return nil, NewTokenExpiredError("Your session has expired. Please log in again")
 	}
 	if response.ValidateToken.Error.Message != "" {
-		return nil, NewUnauthorizedError(response.ValidateToken.Error.Message)
+		return nil, NewTokenExpiredError(response.ValidateToken.Error.Message)
 	}
 	return &response.ValidateToken.Data.User, err
 }
@@ -126,7 +126,7 @@ func SaveUserActivity(userID uuid.UUID, activity string) (*model.UserActivity, e
 
 	err := authServiceClient.Run(context.Background(), req, &resp)
 	if err != nil {
-		return nil, WrapInternal("save user activity", err)
+		return nil, WrapInternal("saving activity", err)
 	}
 
 	if resp.SaveUserActivity.Error.Message != "" {

@@ -32,11 +32,11 @@ func (repo *InatePaymentRepository) StoreIapTransaction(iapInput model.IapTransa
     result := repo.DB.Create(transaction)
 
     if result.Error != nil {
-        return nil, helpers.WrapInternal("save IAP transaction", result.Error)
+        return nil, helpers.WrapInternal("saving purchase", result.Error)
     }
 
     if result.RowsAffected == 0 {
-        return nil, helpers.NewInternalError("no rows were inserted", nil)
+        return nil, helpers.NewInternalError("Could not save your purchase. Please try again", nil)
     }
 
     return transaction, nil
