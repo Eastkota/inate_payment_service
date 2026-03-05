@@ -65,7 +65,8 @@ func VerifyAppleTransaction(receiptData string, productID string, amount float64
         return nil, err
     }
 
-    resp, err := http.Post(config.APPLE_VERIFY_URL, "application/json", bytes.NewBuffer(jsonData))
+    client := &http.Client{Timeout: 30 * time.Second}
+    resp, err := client.Post(config.APPLE_VERIFY_URL, "application/json", bytes.NewBuffer(jsonData))
     if err != nil {
         return nil, err
     }
