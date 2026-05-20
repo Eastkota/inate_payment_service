@@ -3,10 +3,13 @@ package helpers
 import (
 	"inapp_payment_service/config"
 	"fmt"
+	"log"
+	"os"
 	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var GormDB *gorm.DB
@@ -21,7 +24,17 @@ func ConnectToGorm() error {
 			config.PostgresDB(),
 			config.PostgresPort(),
 		)
-		db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		gormLogger := logger.New(
+			log.New(os.Stdout, "", log.LstdFlags),
+			logger.Config{
+				SlowThreshold:             200 * time.Millisecond,
+				LogLevel:                  logger.Warn,
+				IgnoreRecordNotFoundError: true,
+				ParameterizedQueries:      true,
+				Colorful:                  false,
+			},
+		)
+		db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{Logger: gormLogger})
 		if err != nil {
 			return err
 		}
