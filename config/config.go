@@ -28,3 +28,12 @@ const (
 func MembershipApi() string  { return os.Getenv("MEMBERSHIP_API") }
 func AuthServiceApi() string { return os.Getenv("AUTH_SERVICE_API") }
 
+func CouponPostgresUser() string     { return os.Getenv("COUPON_POSTGRES_USER") }
+func CouponPostgresPassword() string { return os.Getenv("COUPON_POSTGRES_PASSWORD") }
+func CouponPostgresHost() string     { return os.Getenv("COUPON_POSTGRES_HOST") }
+func CouponPostgresPort() string     { return os.Getenv("COUPON_POSTGRES_PORT") }
+func CouponPostgresDB() string       { return os.Getenv("COUPON_POSTGRES_DB") }
+
+func CouponDiscountEndDate() string { return os.Getenv("COUPON_DISCOUNT_END_DATE") }
+func CouponDiscountPercent() string { return os.Getenv("COUPON_DISCOUNT_PERCENT") }
+

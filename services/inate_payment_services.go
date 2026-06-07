@@ -5,6 +5,7 @@ import (
 	"inapp_payment_service/model"
 	"inapp_payment_service/repositories"
 
+	"context"
 	"time"
 	"github.com/google/uuid"
 )
@@ -18,6 +19,9 @@ func NewInatePaymentService(repository repositories.Repository) *InatePaymentSer
 }
 
 func (ms *InatePaymentService) VerifyIapReceipt(transactionId string, userId *uuid.UUID, membershipDurationId uuid.UUID, product string, amount float64) (*model.IapTransaction, error) {
+    if userId != nil {
+        helpers.WarnOnAmountMismatch(context.Background(), *userId, membershipDurationId, amount)
+    }
     transaction, err := helpers.VerifyAppleTransaction(transactionId, product, amount)
     if err != nil {
         return nil, err
