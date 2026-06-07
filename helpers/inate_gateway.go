@@ -40,24 +40,30 @@ type Transaction struct {
 }
 
 func VerifyAppleTransaction(receiptData string, productID string, amount float64) (*Transaction, error) {
-	if strings.Contains(receiptData, ".") {
+    // Simulation backdoor — only when IAP_SIMULATED_MODE=true. Real receipts
+    // from the App Store contain a "." (they're JWS tokens), so without this
+    // gate the entire verification step would be skipped in production.
+    if config.IapSimulatedMode() && strings.Contains(receiptData, ".") {
         if strings.Contains(receiptData, "FAILED") {
             return &Transaction{
                 Status: "51",
             }, fmt.Errorf("simulated failure")
         }
-
         return &Transaction{
             TransactionId: "JWS_SIM_" + strconv.FormatInt(time.Now().Unix(), 10),
             ProductId:     productID,
             Amount:        amount,
-            Status:        "Approved", 
+            Status:        "Approved",
         }, nil
+    }
+
+    if config.AppleSharedSecret() == "" {
+        return nil, fmt.Errorf("APPLE_SHARED_SECRET not configured")
     }
 
     payload := map[string]interface{}{
         "receipt-data": receiptData,
-        "password":     config.APPLE_SHARED_SECRET,
+        "password":     config.AppleSharedSecret(),
     }
 
     jsonData, err := json.Marshal(payload)
@@ -66,7 +72,7 @@ func VerifyAppleTransaction(receiptData string, productID string, amount float64
     }
 
     client := &http.Client{Timeout: 30 * time.Second}
-    resp, err := client.Post(config.APPLE_VERIFY_URL, "application/json", bytes.NewBuffer(jsonData))
+    resp, err := client.Post(config.AppleVerifyURL(), "application/json", bytes.NewBuffer(jsonData))
     if err != nil {
         return nil, err
     }
@@ -82,8 +88,36 @@ func VerifyAppleTransaction(receiptData string, productID string, amount float64
         return nil, err
     }
 
+    // Apple returns 21007 when a sandbox receipt is posted to the production
+    // endpoint, and 21008 in the opposite case. Retry once on the other
+    // endpoint per Apple's recommendation.
+    if appleResp.Status == 21007 || appleResp.Status == 21008 {
+        retryURL := config.AppleVerifyURLSandbox
+        if appleResp.Status == 21008 {
+            retryURL = config.AppleVerifyURLProduction
+        }
+        resp2, err := client.Post(retryURL, "application/json", bytes.NewBuffer(jsonData))
+        if err != nil {
+            return nil, err
+        }
+        defer resp2.Body.Close()
+        body2, err := io.ReadAll(resp2.Body)
+        if err != nil {
+            return nil, err
+        }
+        if err := json.Unmarshal(body2, &appleResp); err != nil {
+            return nil, err
+        }
+    }
+
     if appleResp.Status != 0 {
         return nil, fmt.Errorf("receipt verification failed: %s", MapAppleToBankCode(appleResp.Status))
+    }
+
+    // Bundle ID check — reject receipts that didn't originate from our app.
+    // Skipped when APPLE_BUNDLE_ID is unset so non-prod installs don't break.
+    if want := config.AppleBundleID(); want != "" && appleResp.Receipt.BundleID != want {
+        return nil, fmt.Errorf("bundle id mismatch: got %q want %q", appleResp.Receipt.BundleID, want)
     }
 
     if len(appleResp.Receipt.InApp) == 0 {
@@ -97,13 +131,7 @@ func VerifyAppleTransaction(receiptData string, productID string, amount float64
         return nil, err
     }
 
-    appleStatus := appleResp.Status
-
     bankCode := MapAppleToBankCode(appleResp.Status)
-
-    if appleStatus != 0 {
-        return &Transaction{Status: bankCode}, fmt.Errorf("apple error: %d", appleStatus)
-    }
 
     return &Transaction{
         TransactionId: inApp.TransactionID,

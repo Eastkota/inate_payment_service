@@ -16,14 +16,37 @@ const (
 	BENF_BANK_CODE            = "01"
 	CURRENCY                  = "BTN"
 	PAYMENT_PRIVATE_KEY       = "keys/inate-payment.key"
-	APPLE_SHARED_SECRET       = "your_shared_secret_from_app_store_connect"
-	APPLE_VERIFY_URL          = "https://sandbox.itunes.apple.com/verifyReceipt"
-	// APPLE_VERIFY_URL          = "https://buy.itunes.apple.com/verifyReceipt"
-	APPLE_BUNDLE_ID           = "com.yourcompany.yourapp"
-	APPLE_PRIVATE_KEY         = "your_private_key_content_here" // Replace with actual .p8 content
-	APPLE_KEY_ID              = "your_key_id_here"              // e.g., "2X9R4HXF34"
-	APPLE_ISSUER_ID           = "your_issuer_id_here"           // Found in App Store Connect
+
+	// Apple verifyReceipt endpoints. Production is the safer default; sandbox
+	// must be opted into via APPLE_VERIFY_URL env var for test builds.
+	AppleVerifyURLProduction = "https://buy.itunes.apple.com/verifyReceipt"
+	AppleVerifyURLSandbox    = "https://sandbox.itunes.apple.com/verifyReceipt"
 )
+
+// Apple IAP credentials. All driven by env so prod / staging / dev can use
+// different App Store Connect keys without rebuild.
+func AppleSharedSecret() string { return os.Getenv("APPLE_SHARED_SECRET") }
+func AppleBundleID() string     { return os.Getenv("APPLE_BUNDLE_ID") }
+
+// AppleVerifyURL returns the configured verifyReceipt endpoint, defaulting to
+// the production URL when unset (safer than silently using sandbox in prod).
+func AppleVerifyURL() string {
+	if v := os.Getenv("APPLE_VERIFY_URL"); v != "" {
+		return v
+	}
+	return AppleVerifyURLProduction
+}
+
+// App Store Server API JWT auth (unused today; kept here so the env names are
+// stable once the new flow is wired in).
+func ApplePrivateKey() string { return os.Getenv("APPLE_PRIVATE_KEY") }
+func AppleKeyID() string      { return os.Getenv("APPLE_KEY_ID") }
+func AppleIssuerID() string   { return os.Getenv("APPLE_ISSUER_ID") }
+
+// IapSimulatedMode gates the testing-only short-circuit in VerifyAppleTransaction
+// that accepts any receipt containing "." (i.e. any JWS-looking string) as
+// "Approved" without contacting Apple. Must be "true" to enable.
+func IapSimulatedMode() bool { return os.Getenv("IAP_SIMULATED_MODE") == "true" }
 
 func MembershipApi() string  { return os.Getenv("MEMBERSHIP_API") }
 func AuthServiceApi() string { return os.Getenv("AUTH_SERVICE_API") }

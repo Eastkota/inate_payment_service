@@ -32,23 +32,27 @@ var (
 // getCouponDB lazily opens a pooled connection to the coupon DB. On failure
 // (DB unreachable at boot, bad config, etc.) it returns the error and leaves
 // the cache empty, so the next call will retry.
+//
+// Coupon DB credentials default to the main POSTGRES_* values when the
+// COUPON_POSTGRES_* equivalents are empty; only COUPON_POSTGRES_DB is
+// required.
 func getCouponDB() (*gorm.DB, error) {
 	couponDBMu.Lock()
 	defer couponDBMu.Unlock()
 	if couponDB != nil {
 		return couponDB, nil
 	}
-	host := config.CouponPostgresHost()
-	if host == "" {
-		return nil, fmt.Errorf("COUPON_POSTGRES_HOST not configured")
+	dbName := config.CouponPostgresDB()
+	if dbName == "" {
+		return nil, fmt.Errorf("COUPON_POSTGRES_DB not configured")
 	}
+	host := firstNonEmpty(config.CouponPostgresHost(), config.PostgresHost())
+	port := firstNonEmpty(config.CouponPostgresPort(), config.PostgresPort())
+	user := firstNonEmpty(config.CouponPostgresUser(), config.PostgresUser())
+	password := firstNonEmpty(config.CouponPostgresPassword(), config.PostgresPassword())
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-		host,
-		config.CouponPostgresUser(),
-		config.CouponPostgresPassword(),
-		config.CouponPostgresDB(),
-		config.CouponPostgresPort(),
+		host, user, password, dbName, port,
 	)
 	gormLogger := logger.New(
 		log.New(os.Stdout, "[coupon-db] ", log.LstdFlags),
@@ -197,4 +201,13 @@ func WarnOnAmountMismatch(ctx context.Context, userId, membershipDurationId uuid
 		log.Printf("[DISCOUNT-MISMATCH] user=%s duration=%s currency=USD paid=%.2f expected=%.2f eligible=%v",
 			userId, membershipDurationId, paidAmount, expected, eligible)
 	}
+}
+
+func firstNonEmpty(values ...string) string {
+	for _, v := range values {
+		if v != "" {
+			return v
+		}
+	}
+	return ""
 }
